@@ -1,7 +1,5 @@
 # Egész hetes project: Wanderer - Az RPG játék
 
-edited
-
 Készíts egy hős alapú, mezőkön mozgós, szörnyeket gyilkolós játékot.
 Hősünket billentyűzet segítségével irányíthatjuk egy útvesztőben. A hősnek és
 a szörnyeknek szintjük (level) és értékeik (stats) vannak amelyek a szinttől
