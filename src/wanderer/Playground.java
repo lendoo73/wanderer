@@ -1,7 +1,9 @@
 package wanderer;
 
-import java.awt.*;
+import java.awt.Graphics;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 
 public class Playground {
@@ -11,44 +13,52 @@ public class Playground {
 
     Tile[][] ground;
     int numOfWalls;
+    List<Character> characterList;
 
-    public Playground(Graphics graphics) {
+    public Playground() {
         this.rand = new Random();
-        this.graphics = graphics;
-
         this.ground = new Tile[10][10];
         this.numOfWalls = 37;
+        this.characterList = new ArrayList<>();
     }
 
     public void drawGround() {
+        printGround();
+        if (ground[0][0] == null) createGround();
+        for (int row = 0; row < ground.length; row++) {
+            for (int col = 0; col < ground[0].length; col++) {
+                drawTile(ground[row][col], row, col);
+            }
+        }
+    }
+
+    public void createGround() {
         Sand sand = new Sand();
         for (int row = 0; row < ground.length; row++) {
             for (int col = 0; col < ground[0].length; col++) {
-                drawTile(new Sand(), row, col);
                 ground[row][col] = new Sand();
             }
         }
 
-        drawWalls();
+        createWalls();
     }
 
     private void drawTile(Tile tile, int row, int col) {
         PositionedImage image = new PositionedImage(
                 tile.getImgPath(),
-                row * Board.TILE_SIZE,
-                col * Board.TILE_SIZE
+                col * Board.TILE_SIZE,
+                row * Board.TILE_SIZE
         );
         image.draw(graphics);
-        ground[row][col] = tile;
     }
 
-    private void drawWalls() {
+    private void createWalls() {
         while (true) {
             int[] startCoord = getRandCoord(0, 9);
 
             if (walidateWallStartCoord(startCoord)) {
                 buildWall(startCoord);
-                if (numOfWalls > 0) drawWalls();
+                if (numOfWalls > 0) createWalls();
                 break;
             }
         }
@@ -61,7 +71,6 @@ public class Playground {
 
         int row = startCoord[0];
         int col = startCoord[1];
-        drawTile(new Wall(), row, col);
         int sizeOfCurrentWallBlock = getRandNum(2, 9);
         numOfWalls -= sizeOfCurrentWallBlock;
         int counter = 0;
@@ -89,10 +98,10 @@ public class Playground {
             }
 
             // random position valid, place the next part of the wall:
-            drawTile(new Wall(), randNeighboursCoord[0], randNeighboursCoord[1]);
             occupied.add(randNeighboursCoord[0] * 10 + randNeighboursCoord[1]);
             row = randNeighboursCoord[0];
             col = randNeighboursCoord[1];
+            ground[row][col] = new Wall();
         }
     }
 
@@ -184,6 +193,25 @@ public class Playground {
         }
 
         return true;
+    }
+
+    public boolean isWall(int x, int y) {
+        if (matrixOutOfRange(x, y)) return false;
+        printGround();
+        System.out.println(x + " " + y + " " + ground[x][y]);
+        //return ground[x][y] instanceof Wall;
+        return false;
+    }
+
+    private void printGround() {
+        for (int i = 0; i < ground[0].length; i++) {
+            for (int j = 0; j < ground[0].length; j++) {
+                if (ground[i][j] instanceof Wall) {
+                    System.out.print(" " + "W");
+                } else System.out.print(" " + "_");
+            }
+            System.out.println();
+        }
     }
 
 }

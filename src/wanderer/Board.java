@@ -7,33 +7,40 @@ import java.awt.event.KeyListener;
 
 public class Board extends JComponent implements KeyListener {
 
-    int testBoxX;
-    int testBoxY;
+    Graphics graphics;
     public static final int TILE_SIZE = 72;
+    Hero hero;
+    Playground playground;
 
     public Board() {
-        testBoxX = 0;
-        testBoxY = 0;
 
         // beállítja a rajztábla méretét
         setPreferredSize(new Dimension(720, 720));
         setVisible(true);
+        System.out.println("Start board");
+        playground = new Playground();
+        hero = new Hero();
+        playground.characterList.add(hero);
     }
 
     @Override
     public void paint(Graphics graphics) {
         super.paint(graphics);
         // Van egy 720 x 720-as rajztábla
-        // Az alábbi class-al készíthetsz és rajzolhatsz ki egy képet. pl.:
-        PositionedImage image = new PositionedImage("img/floor.png", testBoxX, testBoxY);
-
-        Playground playground = new Playground(graphics);
+        playground.graphics = graphics;
         playground.drawGround();
+        // Az alábbi class-al készíthetsz és rajzolhatsz ki egy képet. pl.:
 
+        PositionedImage image = new PositionedImage(
+                hero.getImgPath(),
+                hero.getHeroBoxX(),
+                hero.getHeroBoxY()
+        );
+        image.draw(graphics);
 
-
-        //image.draw(graphics);
     }
+
+
 
     public static void main(String[] args) {
         // Itt láthatod, hogy készíthetsz egy új ablakot, és hogyan adhatod hozzá a táblánkat (board).
@@ -65,14 +72,15 @@ public class Board extends JComponent implements KeyListener {
     public void keyReleased(KeyEvent event) {
         // Mikor megnyomódik a lefele vagy felfele gomb, a négyzetünk pozíciója változik
         if (event.getKeyCode() == KeyEvent.VK_UP) {
-            testBoxY -= TILE_SIZE;
+            hero.move(0, -1);
         } else if (event.getKeyCode() == KeyEvent.VK_DOWN) {
-            testBoxY += TILE_SIZE;
+            hero.move(0, 1);
         } else if (event.getKeyCode() == KeyEvent.VK_RIGHT) {
-            testBoxX += TILE_SIZE;
+            hero.move(1, 0);
         } else if (event.getKeyCode() == KeyEvent.VK_LEFT) {
-            testBoxX -= TILE_SIZE;
+            hero.move(-1, 0);
         }
+
         // és újra rajzolódik az új koordinátákkal
         repaint();
 

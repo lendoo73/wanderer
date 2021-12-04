@@ -10,6 +10,7 @@ public abstract class Tile {
     public Tile() {}
 
     public Tile(String name,  boolean permeable, String imgPath) {
+        this.name = name;
         this.permeable = permeable;
         this.imgPath = imgPath;
     }
