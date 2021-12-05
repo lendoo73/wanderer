@@ -74,8 +74,12 @@ public abstract class PlayGround {
         return y * 10 + x;
     }
 
-    public boolean isFree(int x, int y) {
+    public boolean isNotFree(int x, int y) {
         return !(freePositions.contains(getCoord(x, y)));
+    }
+
+    protected boolean isNotPermeable(int x, int y) {
+        return !(ground[y][x].isPermeable());
     }
 
     protected boolean matrixOutOfRange(int row,  int col) {

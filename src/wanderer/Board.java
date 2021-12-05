@@ -26,11 +26,13 @@ public class Board extends JComponent implements KeyListener {
 
         hero = new Hero();
         characters.addCharacter(hero);
+        characters.setHero(hero);
 
         // create skeletons:
         int numOfSkeletons = 3;
+        int keyHolder = PlayGround.getRandNum(1, 3);
         for (int i = 1 ; i <= numOfSkeletons; i ++) {
-            characters.addCharacter(new Skeleton());
+            characters.addCharacter(new Skeleton(keyHolder == i));
         }
 
         characters.addCharacter(new Boss());
@@ -49,6 +51,7 @@ public class Board extends JComponent implements KeyListener {
 
         // place all characters on the board:
         for (Character character : characters.characterList) {
+            if (character.isDie()) continue;
             PositionedImage image = new PositionedImage(
                     character.getImgPath(),
                     character.getBoxX(),
@@ -57,6 +60,11 @@ public class Board extends JComponent implements KeyListener {
             image.draw(graphics);
         }
 
+        /*
+        for (Character character : characters.characterList) {
+            if (character.isDie()) characters.characterList.remove(character);
+        }
+        */
         footer(graphics);
 
 

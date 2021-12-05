@@ -2,6 +2,7 @@ package wanderer;
 
 public abstract class Character {
     // fields:
+    private String name;
     private String imgPath;
     private int posX;
     private int posY;
@@ -12,13 +13,12 @@ public abstract class Character {
     protected int sp;
 
     // constructors:
-    public Character(String imgPath) {
-        this.imgPath = imgPath;
-        this.posX = 99;
-        this.posY = 99;
+    public Character(String name, String imgPath) {
+        this(name, imgPath, 99, 99);
     }
 
-    public Character(String imgPath, int posX, int posY) {
+    public Character(String name, String imgPath, int posX, int posY) {
+        this.name = name;
         this.imgPath = imgPath;
         this.posX = posX;
         this.posY = posY;
@@ -54,6 +54,9 @@ public abstract class Character {
     }
 
     // methods:
+    private int getSv() {
+        return sp + d6() * 2;
+    }
 
     public int d6() {
         return PlayGround.getRandNum(1, 6);
@@ -76,6 +79,41 @@ public abstract class Character {
         setPosition(getPosX() + x, getPosY() + y);
     }
 
-    private void die() {}
+    protected Character fight(Character enemy) {
+        int offensiveValue = getSv();
+        int defensiveValue = enemy.dp;
+        if (offensiveValue > defensiveValue) {
+            enemy.hp -= offensiveValue - defensiveValue;
+            if (enemy.isDie()) return enemy;
+        } else {
+            this.hp -= offensiveValue - defensiveValue;
+            if (this.isDie()) return this;
+        }
+
+        return null;
+    }
+
+    protected boolean isDie() {
+        return this.hp <= 0;
+    }
+
+    protected void die() {
+
+        System.out.println(String.format(
+                "%s dead.",
+                this.name
+        ));
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "%s\n" +
+                "HP: %d/%d\n",
+                this.name,
+                this.hp,
+                this.maxHP
+        );
+    }
 
 }

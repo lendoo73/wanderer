@@ -1,13 +1,31 @@
 package wanderer;
 
 public class Hero extends Character {
+    // fields:
+    private boolean hasKey;
 
+    // constructors:
     public Hero() {
-        super("img/hero-down.png", 0, 0);
+        super("Hero", "img/hero-down.png", 0, 0);
         this.hp = 20 + 3 * d6();
         this.maxHP = hp;
         this.dp = 2 * d6();
         this.sp = 5 + d6();
+        this.hasKey = false;
+    }
+
+    // getters:
+    public boolean getHasKey() {
+        return hasKey;
+    }
+
+    // setters:
+    public void setHasKey() {
+        this.hasKey = true;
+    }
+
+    public void setHasKey(boolean hasKey) {
+        this.hasKey = hasKey;
     }
 
     // methods

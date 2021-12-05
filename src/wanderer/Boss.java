@@ -5,7 +5,7 @@ public class Boss extends Character {
 
     // constructors:
     public Boss() {
-        super("img/boss.png");
+        super("Boss", "img/boss.png");
         this.hp = 2 * this.level * d6() + d6();
         this.maxHP = hp;
         this.dp = 2 * d6();
