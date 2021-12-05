@@ -1,46 +1,28 @@
 package wanderer;
 
 import java.awt.Graphics;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
 
-public class Playground {
+public class DrawGround extends PlayGround {
     //field:
-    Random rand;
     Graphics graphics;
 
-    Tile[][] ground;
     int numOfWalls;
-    List<Character> characterList;
 
-    public Playground() {
-        this.rand = new Random();
-        this.ground = new Tile[10][10];
+    // constructors:
+    public DrawGround() {
+        super(new Tile[10][10]);
         this.numOfWalls = 37;
-        this.characterList = new ArrayList<>();
     }
 
+    // methods:
     public void drawGround() {
-        printGround();
         if (ground[0][0] == null) createGround();
         for (int row = 0; row < ground.length; row++) {
             for (int col = 0; col < ground[0].length; col++) {
                 drawTile(ground[row][col], row, col);
             }
         }
-    }
-
-    public void createGround() {
-        Sand sand = new Sand();
-        for (int row = 0; row < ground.length; row++) {
-            for (int col = 0; col < ground[0].length; col++) {
-                ground[row][col] = new Sand();
-            }
-        }
-
-        createWalls();
     }
 
     private void drawTile(Tile tile, int row, int col) {
@@ -50,6 +32,18 @@ public class Playground {
                 row * Board.TILE_SIZE
         );
         image.draw(graphics);
+    }
+
+    public void createGround() {
+        Sand sand = new Sand();
+        for (int row = 0; row < ground.length; row++) {
+            for (int col = 0; col < ground[0].length; col++) {
+                ground[row][col] = new Sand();
+            }
+        }
+        createWalls();
+        placeSkeletons();
+        placeBoss();
     }
 
     private void createWalls() {
@@ -62,6 +56,7 @@ public class Playground {
                 break;
             }
         }
+        // Wallblock created
     }
 
     private void buildWall(int[] startCoord) {
@@ -102,6 +97,8 @@ public class Playground {
             row = randNeighboursCoord[0];
             col = randNeighboursCoord[1];
             ground[row][col] = new Wall();
+            int coord = row * 10 + col;
+            freePositions.remove(Integer.valueOf(coord));
         }
     }
 
@@ -112,6 +109,26 @@ public class Playground {
         if (startCol == 0 && plannedRow == 9) return true; // bottom-left insula
 
         return false;
+    }
+
+    private void placeSkeletons() {
+        for (Character character : characterList) {
+            if (character instanceof Skeleton) {
+                int[] coord = getRandomPosition();
+                character.setPosition(coord[0], coord[1]);
+                removeFromFreePosition(coord[0], coord[1]);
+            }
+        }
+    }
+
+    private void placeBoss() {
+        for (Character character : characterList) {
+            if (character instanceof Boss) {
+                int[] coord = getRandomPosition();
+                character.setPosition(coord[0], coord[1]);
+                removeFromFreePosition(coord[0], coord[1]);
+            }
+        }
     }
 
     private int[] getRandomDirection(int row, int col) {
@@ -140,14 +157,6 @@ public class Playground {
         return new int[]{row, col};
     }
 
-    private boolean matrixOutOfRange(int row,  int col) {
-        if (row < 0) return true;
-        if (col < 0) return true;
-        if (row > 9) return true;
-        if (col > 9) return true;
-        return false;
-    }
-
     private Tile[][] deepCopyGround() {
         Tile[][] copyGround = new Tile[10][10];
         for (int row = 0; row < ground.length; row++) {
@@ -160,10 +169,6 @@ public class Playground {
         int randX = getRandNum(from, to);
         int randY = getRandNum(from, to);
         return new int[]{randX, randY};
-    }
-
-    private int getRandNum(int from, int to) {
-        return rand.nextInt(to + 1 - from) + from;
     }
 
     private boolean walidateWallStartCoord(int[] startCoord) {
@@ -194,24 +199,4 @@ public class Playground {
 
         return true;
     }
-
-    public boolean isWall(int x, int y) {
-        if (matrixOutOfRange(x, y)) return false;
-        printGround();
-        System.out.println(x + " " + y + " " + ground[x][y]);
-        //return ground[x][y] instanceof Wall;
-        return false;
-    }
-
-    private void printGround() {
-        for (int i = 0; i < ground[0].length; i++) {
-            for (int j = 0; j < ground[0].length; j++) {
-                if (ground[i][j] instanceof Wall) {
-                    System.out.print(" " + "W");
-                } else System.out.print(" " + "_");
-            }
-            System.out.println();
-        }
-    }
-
 }

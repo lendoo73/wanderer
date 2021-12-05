@@ -9,35 +9,71 @@ public class Board extends JComponent implements KeyListener {
 
     Graphics graphics;
     public static final int TILE_SIZE = 72;
+    DrawGround drawGround;
+    Characters characters;
     Hero hero;
-    Playground playground;
 
     public Board() {
 
         // beállítja a rajztábla méretét
-        setPreferredSize(new Dimension(720, 720));
+        setPreferredSize(new Dimension(720, 750));
         setVisible(true);
-        System.out.println("Start board");
-        playground = new Playground();
+
+        drawGround = new DrawGround();
+        this.characters = new Characters(drawGround.ground);
+        characters.freePositions = drawGround.freePositions;
+        drawGround.setCharacterList(characters.characterList);
+
         hero = new Hero();
-        playground.characterList.add(hero);
+        characters.addCharacter(hero);
+
+        // create skeletons:
+        int numOfSkeletons = 3;
+        for (int i = 1 ; i <= numOfSkeletons; i ++) {
+            characters.addCharacter(new Skeleton());
+        }
+
+        characters.addCharacter(new Boss());
+
+
+
     }
 
     @Override
     public void paint(Graphics graphics) {
         super.paint(graphics);
         // Van egy 720 x 720-as rajztábla
-        playground.graphics = graphics;
-        playground.drawGround();
+        drawGround.graphics = graphics;
+        drawGround.drawGround();
         // Az alábbi class-al készíthetsz és rajzolhatsz ki egy képet. pl.:
 
-        PositionedImage image = new PositionedImage(
-                hero.getImgPath(),
-                hero.getHeroBoxX(),
-                hero.getHeroBoxY()
-        );
-        image.draw(graphics);
+        // place all characters on the board:
+        for (Character character : characters.characterList) {
+            PositionedImage image = new PositionedImage(
+                    character.getImgPath(),
+                    character.getBoxX(),
+                    character.getBoxY()
+            );
+            image.draw(graphics);
+        }
 
+        footer(graphics);
+
+
+    }
+
+    private void footer(Graphics graphics) {
+        Font font = new Font("Arial", Font.BOLD, 20);
+        graphics.setFont(font);
+        String heroInfo = String.format(
+                "Hero (Level %d) HP: %d/%d | DP: %d | SP: %d",
+                hero.level,
+                hero.hp,
+                hero.maxHP,
+                hero.dp,
+                hero.sp
+        );
+        graphics.drawString(heroInfo, 5, 742);
     }
 
 
@@ -70,16 +106,23 @@ public class Board extends JComponent implements KeyListener {
     // De valójában csak ezt a függvényt használjuk a projekt során
     @Override
     public void keyReleased(KeyEvent event) {
+        int x = 0, y = -1;
         // Mikor megnyomódik a lefele vagy felfele gomb, a négyzetünk pozíciója változik
         if (event.getKeyCode() == KeyEvent.VK_UP) {
-            hero.move(0, -1);
+
         } else if (event.getKeyCode() == KeyEvent.VK_DOWN) {
-            hero.move(0, 1);
+            x = 0;
+            y = 1;
         } else if (event.getKeyCode() == KeyEvent.VK_RIGHT) {
-            hero.move(1, 0);
+            x = 1;
+            y = 0;
         } else if (event.getKeyCode() == KeyEvent.VK_LEFT) {
-            hero.move(-1, 0);
+            x = -1;
+            y = 0;
         }
+        hero.turn(x, y);
+        characters.move(hero, x, y);
+        characters.moveAll();
 
         // és újra rajzolódik az új koordinátákkal
         repaint();

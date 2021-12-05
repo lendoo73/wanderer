@@ -1,16 +1,28 @@
 package wanderer;
 
-public class Character {
+public abstract class Character {
     // fields:
     private String imgPath;
     private int posX;
     private int posY;
+    protected int level;
+    protected int maxHP;
+    protected int hp;
+    protected int dp;
+    protected int sp;
 
     // constructors:
+    public Character(String imgPath) {
+        this.imgPath = imgPath;
+        this.posX = 99;
+        this.posY = 99;
+    }
+
     public Character(String imgPath, int posX, int posY) {
         this.imgPath = imgPath;
         this.posX = posX;
         this.posY = posY;
+        this.level = 1;
     }
 
     // getters:
@@ -42,9 +54,28 @@ public class Character {
     }
 
     // methods:
-    public void move(int x, int y) {
-        if (isWall(this.getPosX() + x, this.getPosY() + y)) return;
-        this.setPosX(this.getPosX() + x);
-        this.setPosY(this.getPosY() + y);
+
+    public int d6() {
+        return PlayGround.getRandNum(1, 6);
     }
+
+    protected void setPosition(int x, int y) {
+        setPosX(x);
+        setPosY(y);
+    }
+
+    public int getBoxX() {
+        return this.getPosX() * Board.TILE_SIZE;
+    }
+
+    public int getBoxY() {
+        return this.getPosY() * Board.TILE_SIZE;
+    }
+
+    protected void move(int x, int y) {
+        setPosition(getPosX() + x, getPosY() + y);
+    }
+
+    private void die() {}
+
 }
